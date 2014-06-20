@@ -45,6 +45,27 @@
 		{
 			return ObjectUtil.deepClone(arr) as Array;
 		}
+		
+		/**
+		 * 
+		 * @param	arr Array or Vector
+		 * @param	key
+		 * @param	vlaue
+		 * @return -1 not find
+		 */
+		static public function indexOfKey(arr:*, key:String, value:*):int 
+		{
+			if (!arr) return -1;
+			var len:int = arr.length;
+			for (var i:int = 0; i < len; i++)
+			{
+				if (arr[i] && arr[i][key] == value)
+				{
+					return i;
+				}
+			}
+			return -1;
+		}
 	}
 	
 }

@@ -159,6 +159,16 @@
 			return arr2D;
 		}
 		
+		static public function substitute(s:String, ...args):String 
+		{
+			var len:int = args.length;
+			for (var i:int = 0; i < len; i++)
+			{
+				s = s.replace(new RegExp("\\{" + i + "\\}", "g"), args[i]);
+			}
+			return s;
+		}
+		
 	}
 	
 }
