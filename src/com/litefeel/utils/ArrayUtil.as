@@ -47,11 +47,11 @@
 		}
 		
 		/**
-		 * 
+		 * 通过key/value查找
 		 * @param	arr Array or Vector
 		 * @param	key
 		 * @param	vlaue
-		 * @return -1 not find
+		 * @return 	-1 if not find
 		 */
 		static public function indexOfKey(arr:*, key:String, value:*):int 
 		{
@@ -65,6 +65,27 @@
 				}
 			}
 			return -1;
+		}
+		
+		/**
+		 * 通过key/value查找
+		 * @param	arr Array or Vector
+		 * @param	key 
+		 * @param	value
+		 * @return 	null if not find
+		 */
+		static public function itemOfKey(arr:*, key:String, value:*):*
+		{
+			if (!arr) return null;
+			var len:int = arr.length;
+			for (var i:int = 0; i < len; i++)
+			{
+				if (arr[i] && arr[i][key] == value)
+				{
+					return arr[i];
+				}
+			}
+			return null;
 		}
 	}
 	
