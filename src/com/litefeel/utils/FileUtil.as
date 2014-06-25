@@ -1,6 +1,8 @@
 package com.litefeel.utils 
 {
 	import flash.filesystem.File;
+	import flash.filesystem.FileMode;
+	import flash.filesystem.FileStream;
 	/**
 	 * 文件
 	 * @author lite3
@@ -68,6 +70,61 @@ package com.litefeel.utils
 				}
 			}
 		}
+		
+		/**
+		 * 遍历目录中的所有文件
+		 * @param	func function(curFile, rootDir);
+		 * @param	dir 要遍历的目录
+		 * @param	ignoreList 
+		 */
+		public static function mapDir(func:Function, dir:File, ignoreList:Array = null):void
+		{
+			if (!dir.exists || !dir.isDirectory) return;
+			
+			_mapDir(func, dir, dir, ignoreList);
+		}
+		
+		private static function _mapDir(func:Function, file:File, root:File, ignoreList:Array):void
+		{
+			if (ignoreList != null)
+			{
+				var resolvePath:String = root.getRelativePath(file);
+				if (ignoreList.indexOf(resolvePath) >= 0)
+				{
+					return;
+				}
+			}
+			if (file.isDirectory)
+			{
+				var list:Array = file.getDirectoryListing();
+				for each(var f:File in list)
+				{
+					_mapDir(func, f, root, ignoreList);
+				}
+			}else
+			{
+				func(file, root);
+			}
+		}
+		
+		
+		public static function readString(file:File):String 
+		{
+			var stream:FileStream = new FileStream();
+			stream.open(file, FileMode.READ);
+			var str:String = stream.readUTFBytes(stream.bytesAvailable);
+			stream.close();
+			return str;
+		}
+		
+		public static function saveString(file:File, str:String):void 
+		{
+			var stream:FileStream = new FileStream();
+			stream.open(file, FileMode.WRITE);
+			stream.writeUTFBytes(str);
+			stream.close();
+		}
+		
 	}
 
 }
