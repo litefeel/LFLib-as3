@@ -35,7 +35,7 @@
 			
 			modalWindow.addEventListener(Event.DEACTIVATE, deactivateHandler);
 			modalWindow.addEventListener(Event.ACTIVATE, deactivateHandler);
-			modalWindow.addEventListener(Event.CLOSING, closingHandler);
+			modalWindow.addEventListener(Event.CLOSE, closingHandler);
 			modalWindow.addEventListener(NativeWindowDisplayStateEvent.DISPLAY_STATE_CHANGING, displayStateChangingHandler);
 			
 			if (backWindow)
@@ -43,7 +43,7 @@
 				backWindow.stage.mouseChildren = false;
 				backWindow.addEventListener(Event.DEACTIVATE, deactivateHandler);
 				backWindow.addEventListener(Event.ACTIVATE, deactivateHandler);
-				backWindow.addEventListener(Event.CLOSING, closingHandler);
+				backWindow.addEventListener(Event.CLOSE, closingHandler);
 				backWindow.addEventListener(NativeWindowBoundsEvent.MOVING, movingHandler);
 				backWindow.addEventListener(NativeWindowDisplayStateEvent.DISPLAY_STATE_CHANGING, displayStateChangingHandler);
 			}
@@ -59,7 +59,7 @@
 			delete modalKeyMap[vo.modal];
 			vo.modal.removeEventListener(Event.DEACTIVATE, deactivateHandler);
 			vo.modal.removeEventListener(Event.ACTIVATE, deactivateHandler);
-			vo.modal.removeEventListener(Event.CLOSING, closingHandler);
+			vo.modal.removeEventListener(Event.CLOSE, closingHandler);
 			vo.modal.removeEventListener(NativeWindowDisplayStateEvent.DISPLAY_STATE_CHANGING, displayStateChangingHandler);
 			
 			if (vo.back)
@@ -68,7 +68,7 @@
 				vo.back.stage.mouseChildren = vo.mouseChildren;
 				vo.back.removeEventListener(Event.DEACTIVATE, deactivateHandler);
 				vo.back.removeEventListener(Event.ACTIVATE, deactivateHandler);
-				vo.back.removeEventListener(Event.CLOSING, closingHandler);
+				vo.back.removeEventListener(Event.CLOSE, closingHandler);
 				vo.back.removeEventListener(NativeWindowBoundsEvent.MOVING, movingHandler);
 				vo.back.removeEventListener(NativeWindowDisplayStateEvent.DISPLAY_STATE_CHANGING, displayStateChangingHandler);
 			}
