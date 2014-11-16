@@ -22,11 +22,8 @@
 			// input 为 null | "" 时,返回自身
 			if (!input) return input;
 			
-			// 第一个字符不是空白
-			if (input.charCodeAt(0) > 32) return input;
-			
 			// 删除左部空白
-			return input.replace(/^\s*/, "");
+			return input.replace(/^\s+/, "");
 		}
 		
 		/**
@@ -41,11 +38,8 @@
 			// input 为 null | "" 时,返回自身
 			if (!input) return input;
 			
-			// 第一个字符不是空白
-			if (input.charCodeAt(input.length - 1) > 32) return input;
-			
 			// 删除左部空白
-			return input.replace(/\s*$/, "");
+			return input.replace(/\s+$/, "");
 		}
 		
 		/**
