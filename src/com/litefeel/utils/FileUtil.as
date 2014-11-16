@@ -108,17 +108,19 @@ package com.litefeel.utils
 		}
 		
 		
-		public static function readString(file:File, charset:String = "utf-8"):String
+		public static function readString(path:String, charset:String = "utf-8"):String
 		{
+			var file:File = new File(path);
 			var stream:FileStream = new FileStream();
 			stream.open(file, FileMode.READ);
-			var str:String = stream.readMultiByte(stream.bytesAvailable, charset);
+			var data:String = stream.readMultiByte(stream.bytesAvailable, charset);
 			stream.close();
-			return str;
+			return data;
 		}
 		
-		public static function saveString(file:File, str:String, charset:String = "utf-8"):void
+		public static function writeString(data:String, path:String, charset:String = "utf-8"):void
 		{
+			var file:File = new File(path);
 			var stream:FileStream = new FileStream();
 			stream.open(file, FileMode.WRITE);
 			stream.writeMultiByte(data, charset);
