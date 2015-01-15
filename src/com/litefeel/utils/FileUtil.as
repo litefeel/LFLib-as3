@@ -111,9 +111,16 @@ package com.litefeel.utils
 		public static function readString(path:String, charset:String = "utf-8"):String
 		{
 			var file:File = new File(path);
+			if (!file.exists) return null;
+			
 			var stream:FileStream = new FileStream();
 			stream.open(file, FileMode.READ);
 			var data:String = stream.readMultiByte(stream.bytesAvailable, charset);
+			// check bom
+			if (charset == "utf-8" && data.charCodeAt(0) == 0xFEFF)
+			{
+				data = data.substr(1);
+			}
 			stream.close();
 			return data;
 		}
