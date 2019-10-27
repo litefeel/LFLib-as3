@@ -48,44 +48,28 @@ package com.litefeel.debug
 		
 		public static function showObject(o:*, linePrefix:String = ""):String
 		{
+			var typeName:String = getQualifiedClassName(o);
 			var buffer:Vector.<String> = new Vector.<String>();
-			_showObject(o, linePrefix || "", new Dictionary(true), buffer);
+			_showObject(o, typeName, linePrefix || "", new Dictionary(true), buffer);
 			return buffer.join("");
 		}
 		
-		private static function _showObject(o:*, linePrefix:String, dict:Dictionary, buffer:Vector.<String>):void
+		private static function _showObject(o:*, typeName:String, linePrefix:String, dict:Dictionary, buffer:Vector.<String>):void
 		{
-			var typeName:String = typeof(o);
-			switch (typeName)
-			{
-			case "number": 
-			case "string": 
-			case "boolean": 
-			case "undefined": 
-			case "null": 
-				buffer.push(":", typeName, indent, String(o), "\n");
-				return;
-			}
+			if (checkBaseType(o, typeName, buffer, false)) return;
 			
-			if (o is Array) typeName = "Array";
-			else if (o is MovieClip) typeName = "MovieClip";
-			else if (o is SimpleButton) typeName = "MovieClip";
-			else if (o is TextField) typeName = "MovieClip";
-			
-			typeName = getQualifiedClassName(o);
-			if (o == null)
-			{
-				buffer.push(linePrefix, ":", typeName, "(null)\n");
-				return;
-			}
 			if (o in dict)
 			{
-				buffer.push(linePrefix, ":", typeName, "(this object is alreay print)\n");
+				buffer.push(":", typeName, "(this object is alreay print)\n");
 				return;
 			}
 			dict[o] = true;
 			
-			buffer.push(linePrefix, ":", typeName, "\n");
+			var realTypeName:String = getQualifiedClassName(o);
+			if (typeName == "*" && checkBaseType(o, realTypeName, buffer, true)) return;
+			
+			if (typeName == realTypeName) buffer.push(":", typeName, "\n");
+			else buffer.push(":", typeName, "[", realTypeName, "]\n");
 			
 			if (typeName.indexOf("flash.") == 0) return;
 			
@@ -93,7 +77,7 @@ package com.litefeel.debug
 			for (var k:String in o)
 			{
 				buffer.push(linePrefix, k);
-				_showObject(o[k], linePrefix, dict, buffer);
+				_showObject(o[k], getQualifiedClassName(o[k]), linePrefix, dict, buffer);
 			}
 			
 			var xml:XML = describeType(o);
@@ -101,19 +85,48 @@ package com.litefeel.debug
 			for each (var tmp:XML in xml.accessor)
 			{
 				if (tmp.@access == "writeonly")
-					buffer.push(linePrefix, tmp.@name, " : this is writeonly property\n");
+					buffer.push(linePrefix, tmp.@name, ":", tmp.@type, "(this is writeonly property)\n");
 				else
 				{
 					buffer.push(linePrefix, tmp.@name);
-					_showObject(safeGetValue(o, tmp.@name), linePrefix, dict, buffer);
+					_showObject(safeGetValue(o, tmp.@name), tmp.@type, linePrefix, dict, buffer);
 				}
 			}
 			for each (tmp in xml.variable)
 			{
 				buffer.push(linePrefix, tmp.@name);
-				_showObject(safeGetValue(o, tmp.@name), linePrefix, dict, buffer);
+				_showObject(safeGetValue(o, tmp.@name), tmp.@type, linePrefix, dict, buffer);
 			}
 		
+		}
+		
+		private static function checkBaseType(o:*, typeName:String, buffer:Vector.<String>, isUntype:Boolean):Boolean
+		{
+			switch (typeName)
+			{
+			case "int": 
+			case "uint": 
+			case "Number": 
+			case "Boolean": 
+			case "String": 
+			case "undefined": 
+			case "null": 
+				if (isUntype)
+					buffer.push(":*[", typeName, "]  ", String(o), "\n");
+				else
+					buffer.push(":", typeName, "   ", String(o), "\n");
+				return true;
+			}
+			if (o == null)
+			{
+				if (isUntype)
+					buffer.push(":*[", typeName, "]  ", "null\n");
+				else
+					buffer.push(":", typeName, "   ", "null\n");
+				return true;
+			}
+			
+			return false;
 		}
 		
 		private static function safeGetValue(o:*, key:String):*

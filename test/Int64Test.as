@@ -27,8 +27,7 @@ package
 			trace(int64.toNumber()); // -3
 			
 			var c:MyClass = new MyClass;
-			var d:MyClass = MyClass(null);
-			var s:String = Debug.showObject(d);
+			var s:String = Debug.showObject(c);
 			var txt:TextField = new TextField();
 			txt.text = s;
 			txt.width = 1000;
