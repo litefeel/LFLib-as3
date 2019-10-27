@@ -1,7 +1,10 @@
 package  
 {
+	import com.litefeel.debug.Debug;
+	import com.litefeel.utils.IconUtil;
 	import com.litefeel.utils.Int64;
 	import flash.display.Sprite;
+	import flash.text.TextField;
 	
 	/**
 	 * ...
@@ -22,6 +25,17 @@ package
 			trace(int64.toNumber()); // 9223372036854776000
 			int64 = new Int64(uint(-1), uint(-3));
 			trace(int64.toNumber()); // -3
+			
+			var c:MyClass = new MyClass;
+			var d:MyClass = MyClass(null);
+			var s:String = Debug.showObject(d);
+			var txt:TextField = new TextField();
+			txt.text = s;
+			txt.width = 1000;
+			txt.height = 1000;
+			//txt.x = 0;
+			//txt.y = 0;
+			addChild(txt);
 		}
 	}
 }
