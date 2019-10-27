@@ -16,6 +16,7 @@ package com.litefeel.debug
 	{
 		public static var loggerEnabled:Boolean = true;
 		public static var traceEnabled:Boolean = true;
+		public static var indent:String = "    ";
 		
 		private static var client:LocalConnection;
 		
@@ -45,14 +46,15 @@ package com.litefeel.debug
 			_trace(s);
 		}
 		
-		public static function showObject(o:*, indent:String = "    "):String
+		public static function showObject(o:*, linePrefix:String = ""):String
 		{
-			return _showObject(o, indent || "", new Dictionary(true));
+			var buffer:Vector.<String> = new Vector.<String>();
+			_showObject(o, linePrefix || "", new Dictionary(true), buffer);
+			return buffer.join("");
 		}
 		
-		private static function _showObject(o:*, indent:String, dict:Dictionary):String
+		private static function _showObject(o:*, linePrefix:String, dict:Dictionary, buffer:Vector.<String>):void
 		{
-			var s:String = "";
 			var typeName:String = typeof(o);
 			switch (typeName)
 			{
@@ -61,9 +63,8 @@ package com.litefeel.debug
 			case "boolean": 
 			case "undefined": 
 			case "null": 
-				s = ":" + typeof(o);
-				s += "     " + o + "\n";
-				return s;
+				buffer.push(":", typeName, indent, String(o), "\n");
+				return;
 			}
 			
 			if (o is Array) typeName = "Array";
@@ -72,18 +73,27 @@ package com.litefeel.debug
 			else if (o is TextField) typeName = "MovieClip";
 			
 			typeName = getQualifiedClassName(o);
-			if (o == null) return indent + ":" + typeName + "(null)\n";
-			if (o in dict) return indent + ":" + typeName + "(this object is alreay print)\n";
+			if (o == null)
+			{
+				buffer.push(linePrefix, ":", typeName, "(null)\n");
+				return;
+			}
+			if (o in dict)
+			{
+				buffer.push(linePrefix, ":", typeName, "(this object is alreay print)\n");
+				return;
+			}
 			dict[o] = true;
 			
-			s = indent + ":" + typeName + "\n";
+			buffer.push(linePrefix, ":", typeName, "\n");
 			
-			if (typeName.indexOf("flash.") == 0) return s;
+			if (typeName.indexOf("flash.") == 0) return;
 			
-			indent += "     ";
+			linePrefix += indent;
 			for (var k:String in o)
 			{
-				s += indent + k + _showObject(o[k], indent, dict);
+				buffer.push(linePrefix, k);
+				_showObject(o[k], linePrefix, dict, buffer);
 			}
 			
 			var xml:XML = describeType(o);
@@ -91,15 +101,18 @@ package com.litefeel.debug
 			for each (var tmp:XML in xml.accessor)
 			{
 				if (tmp.@access == "writeonly")
-					s += indent + tmp.@name + " : this is writeonly property\n";
+					buffer.push(linePrefix, tmp.@name, " : this is writeonly property\n");
 				else
-					s += indent + tmp.@name + _showObject(safeGetValue(o, tmp.@name), indent, dict);
+				{
+					buffer.push(linePrefix, tmp.@name);
+					_showObject(safeGetValue(o, tmp.@name), linePrefix, dict, buffer);
+				}
 			}
 			for each (tmp in xml.variable)
 			{
-				s += indent + tmp.@name + _showObject(safeGetValue(o, tmp.@name), indent, dict);
+				buffer.push(linePrefix, tmp.@name);
+				_showObject(safeGetValue(o, tmp.@name), linePrefix, dict, buffer);
 			}
-			return s;
 		
 		}
 		
