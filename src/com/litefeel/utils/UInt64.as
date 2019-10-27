@@ -1,4 +1,4 @@
-package  
+package com.litefeel.utils
 {
 	import com.litefeel.utils.StringUtil;
 	import flash.utils.IDataInput;
@@ -55,7 +55,7 @@ package
 			if (high > 0)
 			{
 				if (s.length < 8)
-					s = StringUtil.memset("0", 8 - str.length) + s;
+					s = StringUtil.memset("0", 8 - s.length) + s;
 				s = high.toString(16) +s;
 			}
 			return s;

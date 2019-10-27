@@ -4,7 +4,10 @@ package com.litefeel.debug
 	import flash.display.SimpleButton;
 	import flash.net.LocalConnection;
 	import flash.text.TextField;
+	import flash.utils.Dictionary;
 	import flash.utils.describeType;
+	import flash.utils.getQualifiedClassName;
+	
 	/**
 	 * ...
 	 * @author lite3
@@ -15,6 +18,7 @@ package com.litefeel.debug
 		public static var traceEnabled:Boolean = true;
 		
 		private static var client:LocalConnection;
+		
 		/**
 		 * AS3的trace
 		 */
@@ -24,7 +28,7 @@ package com.litefeel.debug
 			var len:Number = args.length;
 			for (var i:Number = 0; i < len; i++)
 			{
-				s += args[i] +" ";
+				s += args[i] + " ";
 			}
 			_trace(s);
 		}
@@ -40,21 +44,26 @@ package com.litefeel.debug
 			var s:String = name + showObject(o, "");
 			_trace(s);
 		}
-		private static function showObject(o:*, lineLeft:String):String
+		
+		public static function showObject(o:*, indent:String = "    "):String
 		{
-			if (null == lineLeft) lineLeft = "";
+			return _showObject(o, indent || "", new Dictionary(true));
+		}
+		
+		private static function _showObject(o:*, indent:String, dict:Dictionary):String
+		{
 			var s:String = "";
 			var typeName:String = typeof(o);
-			switch(typeName)
+			switch (typeName)
 			{
-				case "number" :
-				case "string" :
-				case "boolean" :
-				case "undefined" :
-				case "null" :
-					s = ":" + typeof(o);
-					s += "     " + o + "\n";
-					return s;
+			case "number": 
+			case "string": 
+			case "boolean": 
+			case "undefined": 
+			case "null": 
+				s = ":" + typeof(o);
+				s += "     " + o + "\n";
+				return s;
 			}
 			
 			if (o is Array) typeName = "Array";
@@ -62,24 +71,48 @@ package com.litefeel.debug
 			else if (o is SimpleButton) typeName = "MovieClip";
 			else if (o is TextField) typeName = "MovieClip";
 			
-			s = lineLeft + ":"+typeName+"\n";
-			lineLeft += "     ";
+			typeName = getQualifiedClassName(o);
+			if (o == null) return indent + ":" + typeName + "(null)\n";
+			if (o in dict) return indent + ":" + typeName + "(this object is alreay print)\n";
+			dict[o] = true;
+			
+			s = indent + ":" + typeName + "\n";
+			
+			if (typeName.indexOf("flash.") == 0) return s;
+			
+			indent += "     ";
 			for (var k:String in o)
 			{
-				s += lineLeft + k + showObject(o[k], lineLeft);
+				s += indent + k + _showObject(o[k], indent, dict);
 			}
 			
 			var xml:XML = describeType(o);
-			for each(var tmp:XML in xml.accessor)
+			
+			for each (var tmp:XML in xml.accessor)
 			{
-				s += lineLeft + tmp.@name + showObject(o[tmp.@name], lineLeft);
+				if (tmp.@access == "writeonly")
+					s += indent + tmp.@name + " : this is writeonly property\n";
+				else
+					s += indent + tmp.@name + _showObject(safeGetValue(o, tmp.@name), indent, dict);
 			}
-			for each(tmp in xml.variable)
+			for each (tmp in xml.variable)
 			{
-				s += lineLeft + tmp.@name + showObject(o[tmp.@name], lineLeft);
+				s += indent + tmp.@name + _showObject(safeGetValue(o, tmp.@name), indent, dict);
 			}
 			return s;
-			
+		
+		}
+		
+		private static function safeGetValue(o:*, key:String):*
+		{
+			try
+			{
+				return o[key];
+			}
+			catch (err:Error)
+			{
+				return err.message;
+			}
 		}
 		
 		static private function _trace(s:String):void

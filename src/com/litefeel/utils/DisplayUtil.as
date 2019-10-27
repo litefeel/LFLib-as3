@@ -24,7 +24,7 @@ package com.litefeel.utils
 			if (!bitmap)
 			{
 				bitmap = new Bitmap();
-				bitmapData = new BitmapData();
+				bitmapData = new BitmapData(bitmap.width, bitmap.height);
 			}
 			bitmapData.draw(bitmap);
 		}
@@ -68,7 +68,7 @@ package com.litefeel.utils
 			}
 			
 			var matrix:Matrix = target.transform.concatenatedMatrix.clone();
-			var matrix2:Matrix = targetCoordinateSpace.transform.concatenatedMatrix.clone();
+			var matrix2:Matrix = coordinateSpace.transform.concatenatedMatrix.clone();
 			matrix2.invert();
 			matrix.concat(matrix2);
 			var topLeft:Point = matrix.transformPoint(rect.topLeft);
