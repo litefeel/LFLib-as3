@@ -3,11 +3,12 @@ package com.litefeel.utils
 	import flash.filesystem.File;
 	import flash.filesystem.FileMode;
 	import flash.filesystem.FileStream;
+	import flash.utils.ByteArray;
 	/**
 	 * 文件
 	 * @author lite3
 	 */
-	public class FileUtil 
+	public final class FileUtil 
 	{
 		/**
 		 * 复制目录
@@ -132,6 +133,42 @@ package com.litefeel.utils
 			stream.open(file, FileMode.WRITE);
 			stream.writeMultiByte(data, charset);
 			stream.close();
+		}
+		
+		public static function readBytes(path:String):ByteArray 
+		{
+			var file:File = new File(path);
+			if (!file.exists) return null;
+			
+			var stream:FileStream = new FileStream();
+			stream.open(file, FileMode.READ);
+			var bytes:ByteArray = new ByteArray();
+			stream.readBytes(bytes);
+			stream.close();
+			return bytes;
+		}
+		
+		public static function writeBytes(data:ByteArray, path:String):void 
+		{
+			var file:File = new File(path);
+			var stream:FileStream = new FileStream();
+			stream.open(file, FileMode.WRITE);
+			stream.writeBytes(data);
+			stream.close();
+		}
+		
+		public static function readObject(path:String):* 
+		{
+			var bytes:ByteArray = readBytes(path);
+			if (bytes == null) return null;
+			return bytes.readObject();
+		}
+		
+		public static function writeObject(obj:*, path:String):* 
+		{
+			var bytes:ByteArray = new ByteArray();
+			bytes.writeObject(obj);
+			writeBytes(bytes, path);
 		}
 		
 		public static function getFileName(path:String):String

@@ -12,7 +12,7 @@ package com.litefeel.debug
 	 * ...
 	 * @author lite3
 	 */
-	public class Debug
+	public final class Debug
 	{
 		public static var loggerEnabled:Boolean = true;
 		public static var traceEnabled:Boolean = true;
