@@ -107,9 +107,10 @@
 		 */
 		static public function memset(input:String, count:int):String
 		{
-			if (!input || count <= 0) return str;			// (null || "") 返回本身   
+			if (!input) return str;			// (null || "") 返回本身   
 			
 			var str:String = "";
+			if (count < 0) count = 0;		// 防止溢出
 			while (count--)
 			{
 				str += input;

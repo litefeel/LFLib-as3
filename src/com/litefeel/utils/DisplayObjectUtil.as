@@ -75,6 +75,33 @@
 		}
 		
 		/**
+		 * 返回一个矩形，该矩形定义相对于 targetCoordinateSpace 对象坐标系的显示对象区域
+		 * @param	mc
+		 * @param	targetCoordinateSpace	目标坐标系的影片剪辑
+		 * @return
+		 */
+		/*public static function getViewBounds(mc:MovieClip, targetCoordinateSpace:MovieClip):Rectangle
+		{
+			if (!mc || ! targetCoordinateSpace) return null;
+			
+			var bounds:Object = mc.getBounds(targetCoordinateSpace);
+			var w:Number = bounds.xMax - bounds.xMin;
+			var h:Number = bounds.yMax - bounds.yMin;
+			
+			var bitmap:BitmapData = new BitmapData(w, h, true, 0x0);
+			var matrix:Matrix = mc.transform.matrix;
+			matrix.tx = -bounds.xMin;
+			matrix.ty = -bounds.yMin;
+			bitmap.draw(mc, matrix);
+			bitmap.threshold(bitmap, bitmap.rectangle, new Point(0, 0), ">", 0xFF000000, 0xFF000000, 0xFFFFFFFF, false);
+			var viewRect:Rectangle = bitmap.getColorBoundsRect(0xFFFFFFFF, 0xFF000000, true);
+			viewRect.x += bounds.xMin;
+			viewRect.y += bounds.yMin;
+			bitmap.dispose();
+			return viewRect;
+		}*/
+		
+		/**
 		 * 复制一个显示对象
 		 * 
 		 * 局限性 :	1. 仅重建了一个显示对象, 内部的没有新建
